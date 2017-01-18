@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div ng-app="chatboxmod">
+        <div ng-view>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        (function () {
+            'use strict';
+            var app = angular.module('chatboxmod', ['ngRoute']);
+
+            app.config(['$routeProvider', '$locationProvider',
+            function ($routeProvider, $locationProvider) {
+                $routeProvider
+                    .when('/', {
+                        templateUrl: '/partials/default.html',
+                        controller: 'defaultcontroller'
+                    })
+                    .when('/chatbox', {
+                        templateUrl: '/partials/chatbox.html',
+                        controller: 'chatboxcontroller'
+                    })
+                $locationProvider.html5Mode(true);
+            }]);
+
+            app.controller("defaultcontroller", function ($scope) {
+                $scope.header = "Project aim to clone Omegle using ASP.NET Core, AngularJs and SignalR";
+            });
+
+            app.controller("chatboxcontroller", function ($scope) {
+                var $roomName = '';
+                var $connectionId = '';
+                var $partnerConnectionId = '';
+                var $isLooking = true;
+
+                $('#status').text("Connecting");
+
+                var hub = $.connection.chatHub;
+
+                hub.client.getConnectionId = function (connectionId) {
+                    $connectionId = connectionId;
+
+                    hub.server.findChat();
+                }
+
+                hub.client.lookForPartner = function (connectionId) {
+                    if ($isLooking === true && $connectionId !== connectionId) {
+                        $partnerConnectionId = connectionId;
+                        hub.server.matchFound($connectionId, connectionId);
+                    }
+                }
+               
+                hub.client.matchFound = function (roomName) {
+                    $isLooking = false;
+                    $roomName = roomName;
+                    $('#status').text("Connected");
+
+                    $('#chatfeed').append('<li class="left clearfix">' +
+                        '<div class="chat-body clearfix">' +
+                            '<div class="header">' +
+                                '<strong class="primary-font">Stranger Connected.</strong>' +
+                         '</div></div></li>');
+                }
+
+                hub.client.receiveMessage = function (sender, message) {
+                    var source = "Stranger";
+                    if(sender === $connectionId){
+                        source = "You";
+                    }
+
+                    $('#chatfeed').append('<li class="left clearfix">' + 
+                        '<div class="chat-body clearfix">' +
+                            '<div class="header">'+
+                                '<strong class="primary-font">' + source + ':</strong>' + message +
+                         '</div></div></li>');
+
+                    $(".panel-body").animate({ scrollTop: $('#chatfeed').height() }, "slow");
+                }
+
+                hub.client.disconnect = function () {
+                    $isLooking = true;
+
+                    $('#chatfeed').append('<li class="left clearfix">' +
+                        '<div class="chat-body clearfix">' +
+                            '<div class="header">' +
+                                '<strong class="primary-font">Stranger Disconnected.</strong>' +
+                         '</div></div></li>');
+
+
+                    $('#status').text("Looking for stranger");
+                }
+
+                $.connection.hub.start().done(function () {
+                    $('#status').text("Connected");
+                    $('#status').text("Looking for stranger");
+
+                    hub.server.getConnectionId();
+                });
+
+                $("#btn-chat").click(function () {
+                    if ($isLooking === false) {
+                        hub.server.sendMessage($roomName, $("#btn-input").val());
+                        $("#btn-input").val("");
+                    }
+                });
+
+                $(document).keypress(function (e) {
+                    if ($isLooking === false) {
+                        if (e.which == 13) {
+                            hub.server.sendMessage($roomName, $("#btn-input").val());
+                            $("#btn-input").val("");
+                        }
+                    }
+                });
+
+                window.onbeforeunload = function (e) {
+                    var message = "Are you sure you want to leave this page?",
+                    e = e || window.event;
+                    if (e) {
+                        e.returnValue = message;
+                    }
+                    return message;
+                };
+
+                $(window).unload(function () {
+                    hub.server.disconnectToRoom($roomName, $connectionId, $partnerConnectionId);
+                    window.location = "/";
+                });
+            });
+
+        })();
+    </script>
+}
