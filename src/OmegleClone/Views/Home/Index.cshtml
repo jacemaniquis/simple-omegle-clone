@@ -46,6 +46,10 @@
 
                 //$.connection.hub.logging = true;
 
+                hub.client.getConnectionId = function (connectionId) {
+                    $connectionId = connectionId;
+                }
+
                 hub.client.pending = function () {
                     $('#status').text("Looking for stranger");
                     $isLooking = true;
