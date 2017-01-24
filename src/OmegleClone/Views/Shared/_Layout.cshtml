@@ -56,10 +56,6 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="~/lib/angular/angular.js"></script>
-        <script src="~/lib/angular-route/angular-route.js"></script>
-        <script src="~/lib/signalr/jquery.signalR.js"></script>
-        <script src="~/signalr/hubs"></script>
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
@@ -68,6 +64,10 @@
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
+        <script src="~/lib/angular/angular.js"></script>
+        <script src="~/lib/angular-route/angular-route.js"></script>
+        <script src="~/lib/signalr/jquery.signalR.js"></script>
+        <script src="~/signalr/hubs"></script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 

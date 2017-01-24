@@ -33,15 +33,18 @@
                 $scope.header = "Project aim to clone Omegle using ASP.NET Core, AngularJs and SignalR";
             });
 
-            app.controller("chatboxcontroller", function ($scope) {
+            app.controller("chatboxcontroller", function ($scope, $interval) {
                 var $roomName = '';
                 var $connectionId = '';
                 var $partnerConnectionId = '';
                 var $isLooking = true;
+                var $timeStamp = new Date();
 
                 $('#status').text("Connecting");
 
                 var hub = $.connection.chatHub;
+
+                $.connection.hub.logging = true;
 
                 hub.client.getConnectionId = function (connectionId) {
                     $connectionId = connectionId;
@@ -96,9 +99,21 @@
                     $('#status').text("Looking for stranger");
                 }
 
+                hub.client.ping = function (date) {
+                    var elapsed = new Date().getTime() - $timeStamp.getTime();
+                    $('#ping').text("Ping: " + elapsed + "ms");
+                }
+
                 $.connection.hub.start().done(function () {
                     $('#status').text("Connected");
                     $('#status').text("Looking for stranger");
+
+                    var tick = function () {
+                        $timeStamp = new Date();
+                        hub.server.ping();
+                    }
+
+                    $interval(tick, 1000);
 
                     hub.server.getConnectionId();
                 });

@@ -39,6 +39,11 @@ namespace OmegleClone.Hubs
             Clients.Group(roomName).receiveMessage(Context.ConnectionId, message);
         }
 
+        public void Ping()
+        {
+            Clients.Caller.Ping();
+        }
+
         public async Task DisconnectToRoom(string roomName, string user1ConnId, string user2ConnId)
         {
             Clients.Group(roomName).disconnect();
