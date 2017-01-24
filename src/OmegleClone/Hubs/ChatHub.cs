@@ -11,6 +11,8 @@ namespace OmegleClone.Hubs
     [HubName("chatHub")]
     public class ChatHub : Hub
     {
+        private static List<Group> _Groups = new List<Group>();
+
         public override Task OnConnected()
         {
             return Clients.Client(Context.ConnectionId).SetConnectionId(Context.ConnectionId);
@@ -21,17 +23,26 @@ namespace OmegleClone.Hubs
             Clients.Caller.getConnectionId(Context.ConnectionId);
         }
 
-        public void FindChat()
+        public async Task FindChat()
         {
-            Clients.All.LookForPartner(Context.ConnectionId);
-        }
-
-        public async Task MatchFound(string user1ConnId, string user2ConnId)
-        {
-            var guid = Guid.NewGuid().ToString();
-            await Groups.Add(user1ConnId, guid);
-            await Groups.Add(user2ConnId, guid);
-            Clients.Group(guid).matchFound(guid);
+            var availableRoom = _Groups.FirstOrDefault(p => string.IsNullOrEmpty(p.User2));
+            if (availableRoom != null)
+            {
+                availableRoom.User2 = Context.ConnectionId;
+                await Groups.Add(availableRoom.User1, availableRoom.GroupId);
+                await Groups.Add(availableRoom.User2, availableRoom.GroupId);
+                Clients.Group(availableRoom.GroupId).matchFound(availableRoom.GroupId);
+            }
+            else
+            {
+                var guid = Guid.NewGuid().ToString();
+                _Groups.Add(new Group()
+                {
+                    GroupId = guid,
+                    User1 = Context.ConnectionId
+                });
+                Clients.Caller.pending();
+            }
         }
 
         public void SendMessage(string roomName, string message)
@@ -44,11 +55,28 @@ namespace OmegleClone.Hubs
             Clients.Caller.Ping();
         }
 
-        public async Task DisconnectToRoom(string roomName, string user1ConnId, string user2ConnId)
+        public async Task DisconnectToRoom(string roomName)
         {
-            Clients.Group(roomName).disconnect();
-            await Groups.Remove(user1ConnId, roomName);
-            await Groups.Remove(user2ConnId, roomName);
+            var room = _Groups.FirstOrDefault(p => p.GroupId == roomName);
+            if (room != null)
+            {
+                var user1 = room.User1;
+                var user2 = room.User2;
+                _Groups.Remove(room);
+                Clients.Group(roomName).disconnect();
+                await Groups.Remove(user1, roomName);
+                await Groups.Remove(user2, roomName);
+            }
         }
+    }
+
+
+    public class Group
+    {
+        public string GroupId { get; set; }
+
+        public string User1 { get; set; }
+
+        public string User2 { get; set; }
     }
 }

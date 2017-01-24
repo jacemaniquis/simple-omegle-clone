@@ -1,5 +1,5 @@
---temp-output:C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\obj\Release\netcoreapp1.0\
---out:C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\bin\Release\netcoreapp1.0\OmegleClone.dll
+--temp-output:E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\obj\Release\netcoreapp1.0\
+--out:E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\bin\Release\netcoreapp1.0\OmegleClone.dll
 --define:RELEASE
 --define:TRACE
 --define:NETCOREAPP1_0
@@ -196,8 +196,8 @@
 --reference:C:\Users\Cloud\.nuget\packages\System.Threading.Timer\4.3.0\ref\netstandard1.2\System.Threading.Timer.dll
 --reference:C:\Users\Cloud\.nuget\packages\System.Xml.ReaderWriter\4.3.0\ref\netstandard1.3\System.Xml.ReaderWriter.dll
 --reference:C:\Users\Cloud\.nuget\packages\System.Xml.XDocument\4.3.0\ref\netstandard1.3\System.Xml.XDocument.dll
---resource:"C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\obj\Release\netcoreapp1.0\OmegleClonedotnet-compile.deps.json",OmegleClone.deps.json
-C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\Program.cs
-C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\Startup.cs
-C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\Controllers\HomeController.cs
-C:\Users\Cloud\documents\visual studio 2015\Projects\OmegleClone\src\OmegleClone\Hubs\ChatHub.cs
+--resource:"E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\obj\Release\netcoreapp1.0\OmegleClonedotnet-compile.deps.json",OmegleClone.deps.json
+E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\Program.cs
+E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\Startup.cs
+E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\Controllers\HomeController.cs
+E:\Jace\Git-Repo\simple omegle clone\src\OmegleClone\Hubs\ChatHub.cs

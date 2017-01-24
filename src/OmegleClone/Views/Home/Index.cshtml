@@ -36,29 +36,20 @@
             app.controller("chatboxcontroller", function ($scope, $interval) {
                 var $roomName = '';
                 var $connectionId = '';
-                var $partnerConnectionId = '';
-                var $isLooking = true;
+                var $isLooking = false;
                 var $timeStamp = new Date();
 
                 $('#status').text("Connecting");
 
                 var hub = $.connection.chatHub;
 
-                $.connection.hub.logging = true;
+                //$.connection.hub.logging = true;
 
-                hub.client.getConnectionId = function (connectionId) {
-                    $connectionId = connectionId;
-
-                    hub.server.findChat();
+                hub.client.pending = function () {
+                    $('#status').text("Looking for stranger");
+                    $isLooking = true;
                 }
 
-                hub.client.lookForPartner = function (connectionId) {
-                    if ($isLooking === true && $connectionId !== connectionId) {
-                        $partnerConnectionId = connectionId;
-                        hub.server.matchFound($connectionId, connectionId);
-                    }
-                }
-               
                 hub.client.matchFound = function (roomName) {
                     $isLooking = false;
                     $roomName = roomName;
@@ -95,8 +86,7 @@
                                 '<strong class="primary-font">Stranger Disconnected.</strong>' +
                          '</div></div></li>');
 
-
-                    $('#status').text("Looking for stranger");
+                    hub.server.findChat();
                 }
 
                 hub.client.ping = function (date) {
@@ -105,8 +95,6 @@
                 }
 
                 $.connection.hub.start().done(function () {
-                    $('#status').text("Connected");
-                    $('#status').text("Looking for stranger");
 
                     var tick = function () {
                         $timeStamp = new Date();
@@ -116,6 +104,7 @@
                     $interval(tick, 1000);
 
                     hub.server.getConnectionId();
+                    hub.server.findChat();
                 });
 
                 $("#btn-chat").click(function () {
@@ -144,7 +133,7 @@
                 };
 
                 $(window).unload(function () {
-                    hub.server.disconnectToRoom($roomName, $connectionId, $partnerConnectionId);
+                    hub.server.disconnectToRoom($roomName);
                     window.location = "/";
                 });
             });
